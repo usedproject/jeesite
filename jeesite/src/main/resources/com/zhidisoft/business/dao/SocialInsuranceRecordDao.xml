@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidisoft.business.dao.SocialInsuranceRecordDao">
+  <resultMap id="BaseResultMap" type="com.zhidisoft.business.entity.SocialInsuranceRecord">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="sdCard" jdbcType="VARCHAR" property="sdcard" />
+    <result column="yanglao" jdbcType="DOUBLE" property="yanglao" />
+    <result column="yiliao" jdbcType="DOUBLE" property="yiliao" />
+    <result column="gongshang" jdbcType="DOUBLE" property="gongshang" />
+    <result column="shiye" jdbcType="DOUBLE" property="shiye" />
+    <result column="shengyu" jdbcType="DOUBLE" property="shengyu" />
+    <result column="payMoney" jdbcType="DOUBLE" property="paymoney" />
+    <result column="payMonth" jdbcType="VARCHAR" property="paymonth" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="createBy" jdbcType="INTEGER" property="createby" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="updateBy" jdbcType="INTEGER" property="updateby" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    
+    <association property="socialInsurance" column="sbcard" javaType="com.zhidisoft.business.entity.SocialInsurance">
+    	<result column="idcard" jdbcType="VARCHAR" property="idcard"/>
+    </association>
+    
+    <association property="customer" javaType="com.zhidisoft.business.entity.Customer">
+    	<result column="name" property="name"/>
+    	<result column="idCard" property="idcard"/>
+    </association>
+  </resultMap>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_social_insurance_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 向表中插入记录 -->
+  <insert id="insert" parameterType="com.zhidisoft.business.entity.SocialInsuranceRecord">
+    insert into tb_social_insurance_record (sdCard, yanglao, 
+      yiliao, gongshang, shiye, 
+      shengyu, payMoney, payMonth, 
+      status, createBy, createTime
+      )
+    values (#{record.sdcard,jdbcType=VARCHAR}, #{record.yanglao,jdbcType=DOUBLE}, 
+      #{record.yiliao,jdbcType=DOUBLE}, #{record.gongshang,jdbcType=DOUBLE}, #{record.shiye,jdbcType=DOUBLE}, 
+      #{record.shengyu,jdbcType=DOUBLE}, #{record.paymoney,jdbcType=DOUBLE}, #{record.paymonth,jdbcType=VARCHAR}, 
+      #{record.status,jdbcType=VARCHAR}, #{record.createby,jdbcType=INTEGER}, #{record.createtime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <update id="updateByPrimaryKey">
+    update tb_social_insurance_record
+    set 
+      yanglao = #{record.yanglao,jdbcType=DOUBLE},
+      yiliao = #{record.yiliao,jdbcType=DOUBLE},
+      gongshang = #{record.gongshang,jdbcType=DOUBLE},
+      shiye = #{record.shiye,jdbcType=DOUBLE},
+      shengyu = #{record.shengyu,jdbcType=DOUBLE},
+      payMoney = #{record.paymoney,jdbcType=DOUBLE},
+      payMonth = #{record.paymonth,jdbcType=VARCHAR},
+      updateBy = #{record.updateby,jdbcType=INTEGER},
+      updateTime = #{record.updatetime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, sdCard, yanglao, yiliao, gongshang, shiye, shengyu, payMoney, payMonth, 
+    status, createBy, createTime, updateBy, updateTime, remark
+    from tb_social_insurance_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 获取所有的记录 -->
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, sdCard, yanglao, yiliao, gongshang, shiye, shengyu, payMoney, payMonth, 
+    status, createBy, createTime, updateBy, updateTime, remark
+    from tb_social_insurance_record
+  </select>
+  
+  <!-- 分页查询有效记录 -->
+  <select id="getListByPage" resultMap="BaseResultMap">
+  	SELECT * FROM tb_social_insurance_record sir
+	LEFT JOIN 
+		(SELECT ct.name NAME, si.sbCard sbCard, si.idCard FROM tb_social_insurance si LEFT JOIN tb_customer ct ON si.idCard = ct.idCard) tb 
+	ON sir.sdcard = tb.sbcard 
+	where status = 0 
+		<if test="customerName!=null and customerName!=''">
+  			and tb.name like concat("%",#{customerName},"%")
+  		</if>
+  		<if test="idcard!=null and idcard!=''">
+  			and tb.idcard = #{idcard}
+  		</if>
+  		<if test="sbcard!=null and sbcard!=''">
+  			and sir.sbcard = #{sbcard}
+  		</if>
+	 limit #{page}, #{rows}
+  </select>
+  
+  <!-- 获取当前查询的记录数量 -->
+  <select id="getCount" resultType="integer">
+  	SELECT count(1) FROM (SELECT * FROM tb_social_insurance_record sir
+	LEFT JOIN 
+		(SELECT ct.name NAME, si.sbCard sbCard, si.idCard FROM tb_social_insurance si LEFT JOIN tb_customer ct ON si.idCard = ct.idCard) tb 
+	ON sir.sdcard = tb.sbcard 
+	where status = 0 
+		<if test="customerName!=null and customerName!=''">
+  			and tb.name like concat("%",#{customerName},"%")
+  		</if>
+  		<if test="idcard!=null and idcard!=''">
+  			and tb.idcard = #{idcard}
+  		</if>
+  		<if test="sbcard!=null and sbcard!=''">
+  			and sir.sbcard = #{sbcard}
+  		</if>
+	 ) a
+  </select>
+  
+  <!-- 获取当前的统计信息 -->
+  <select id="getStatistics" resultType="com.zhidisoft.utils.StatisticsShebao">
+  	SELECT a.name, a.idcard, sdCard,a.cpname, COUNT(1) counts, a.proxyFee*COUNT(1) proxyFee, SUM(paymoney) sums, sir.status 
+	FROM tb_social_insurance_record sir,
+	(SELECT c.name,c.cpname, si.idCard, si.sbCard, si.proxyFee FROM tb_social_insurance si, 
+		(SELECT ct.*, cp.name cpname FROM tb_customer ct, tb_company cp WHERE ct.companyid = cp.id
+		<if test="customerName!=null and customerName!=''">
+			and ct.name like concat("%", #{customerName},"%")
+		</if>
+		<if test="companyName!=null and companyName!=''">
+			and ct.companyid = #{companyName}
+		</if>
+		) c 
+		WHERE c.idCard = si.idCard
+		<if test="idcard!=null and idcard!=''">
+			and si.idCard like concat("%",#{idcard},"%")
+		</if>
+		) a 
+	WHERE sir.sdCard = a.sbcard
+	<if test="sbcard!=null and sbcard!=''">
+		and sir.sdCard like concat("%",#{sbcard},"%") 
+	</if>
+	 GROUP BY sir.sdCard limit #{page}, #{rows}
+  </select>
+  
+  <!-- 导出excel的方法 -->
+  <select id="getStatisticsBy" resultType="com.zhidisoft.utils.StatisticsShebao">
+  	SELECT a.name, a.idcard, sdCard,a.cpname, COUNT(1) counts, a.proxyFee*COUNT(1) proxyFee, SUM(paymoney) sums, sir.status 
+	FROM tb_social_insurance_record sir,
+	(SELECT c.name,c.cpname, si.idCard, si.sbCard, si.proxyFee FROM tb_social_insurance si, 
+		(SELECT ct.*, cp.name cpname FROM tb_customer ct, tb_company cp WHERE ct.companyid = cp.id
+		<if test="customerName!=null and customerName!=''">
+			and ct.name like concat("%", #{customerName},"%")
+		</if>
+		<if test="companyName!=null and companyName!=''">
+			and ct.companyid = #{companyName}
+		</if>
+		) c 
+		WHERE c.idCard = si.idCard
+		<if test="idcard!=null and idcard!=''">
+			and si.idCard like concat("%",#{idcard},"%")
+		</if>
+		) a 
+	WHERE sir.sdCard = a.sbcard
+	<if test="sbcard!=null and sbcard!=''">
+		and sir.sdCard like concat("%",#{sbcard},"%") 
+	</if>
+	 GROUP BY sir.sdCard
+  </select>
+  
+  <!-- 获取统计个数 -->
+  <select id="getStatisticCount" resultType="integer">
+  	select count(1) from (SELECT a.name, a.idcard, sdCard,a.cpname, COUNT(1) counts, a.proxyFee*COUNT(1) proxyFee, SUM(paymoney) sums, sir.status 
+	FROM tb_social_insurance_record sir,
+	(SELECT c.name,c.cpname, si.idCard, si.sbCard, si.proxyFee FROM tb_social_insurance si, 
+		(SELECT ct.*, cp.name cpname FROM tb_customer ct, tb_company cp WHERE ct.companyid = cp.id
+		<if test="customerName!=null and customerName!=''">
+			and ct.name like concat("%", #{customerName},"%")
+		</if>
+		<if test="companyName!=null and companyName!=''">
+			and ct.companyid = #{companyName}
+		</if>
+		) c 
+		WHERE c.idCard = si.idCard
+		<if test="idcard!=null and idcard!=''">
+			and si.idCard like concat("%",#{idcard},"%")
+		</if>
+		) a 
+	WHERE sir.sdCard = a.sbcard
+	<if test="sbcard!=null and sbcard!=''">
+		and sir.sdCard like concat("%",#{sbcard},"%") 
+	</if>
+	 GROUP BY sir.sdCard) tb
+  </select>
+</mapper>

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidisoft.business.dao.AccumulationFundDao">
+  <resultMap id="BaseResultMap" type="com.zhidisoft.business.entity.AccumulationFund">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="idCard" jdbcType="VARCHAR" property="idcard" />
+    <result column="accountNo" jdbcType="VARCHAR" property="accountno" />
+    <result column="payDate" jdbcType="VARCHAR" property="paydate" />
+    <result column="payMoney" jdbcType="DOUBLE" property="paymoney" />
+    <result column="name" property="name" jdbcType="VARCHAR"/>
+    <result column="proxyFee" jdbcType="DOUBLE" property="proxyfee" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="createBy" jdbcType="INTEGER" property="createby" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="updateBy" jdbcType="INTEGER" property="updateby" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_accumulation_fund
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidisoft.business.entity.AccumulationFund">
+    insert into tb_accumulation_fund (idCard, accountNo, 
+      payDate, payMoney, proxyFee, 
+      status, createBy, createTime, 
+      updateBy, updateTime, remark
+      )
+    values ( #{idcard,jdbcType=VARCHAR}, #{accountno,jdbcType=VARCHAR}, 
+      #{paydate,jdbcType=VARCHAR}, #{paymoney,jdbcType=DOUBLE}, #{proxyfee,jdbcType=DOUBLE}, 
+      #{status,jdbcType=VARCHAR}, #{createby,jdbcType=INTEGER}, #{createtime,jdbcType=TIMESTAMP}, 
+      #{updateby,jdbcType=INTEGER}, #{updatetime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidisoft.business.entity.AccumulationFund">
+    update tb_accumulation_fund set
+      payDate = #{paydate,jdbcType=VARCHAR},
+      accountNo = #{accountno},
+      proxyFee = #{proxyfee,jdbcType=DOUBLE},
+      status = #{status,jdbcType=VARCHAR},
+      updateBy = #{updateby,jdbcType=INTEGER},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey"  resultMap="BaseResultMap">
+     SELECT tb_accumulation_fund.id,NAME, tb_customer.idCard, accountNo,
+  	  payDate, payMoney, proxyFee, tb_accumulation_fund.status, 
+  	  tb_accumulation_fund.createBy, tb_accumulation_fund.createTime, 
+	tb_accumulation_fund.updateBy, tb_accumulation_fund.updateTime, 
+	tb_accumulation_fund.remark   
+	FROM tb_accumulation_fund right JOIN tb_customer ON tb_accumulation_fund.idCard=tb_customer.idCard  
+    where tb_accumulation_fund.id = #{id}
+  </select>
+  
+  <select id="selectAll" resultMap="BaseResultMap">
+    SELECT tb_accumulation_fund.id,NAME, tb_customer.idCard, accountNo,
+  	  payDate, payMoney, proxyFee, tb_accumulation_fund.status, 
+  	  tb_accumulation_fund.createBy, tb_accumulation_fund.createTime, 
+	tb_accumulation_fund.updateBy, tb_accumulation_fund.updateTime, 
+	tb_accumulation_fund.remark   
+	FROM tb_accumulation_fund right JOIN tb_customer ON tb_accumulation_fund.idCard=tb_customer.idCard  
+  </select>
+  
+  <select id="getListByPage" resultMap="BaseResultMap">
+  	 SELECT tb_accumulation_fund.id,NAME, tb_accumulation_fund.idCard, accountNo,
+  	  payDate, payMoney, proxyFee, tb_accumulation_fund.status, 
+  	  tb_accumulation_fund.createBy, tb_accumulation_fund.createTime, 
+	tb_accumulation_fund.updateBy, tb_accumulation_fund.updateTime, 
+	tb_accumulation_fund.remark   
+	FROM tb_accumulation_fund LEFT JOIN tb_customer ON tb_accumulation_fund.idCard=tb_customer.idCard  
+    <where>
+    	tb_customer.isGongjijin=0
+    	<if test="accountno!=null and accountno!=''">
+    		and accountNo like concat("%",#{accountno},"%")
+    	</if>
+    	<if test="idcard!=null and idcard!=''">
+    		and tb_accumulation_fund.idCard like concat("%",#{idcard},"%")
+    	</if>
+    </where>
+    limit #{page},#{rows}
+  </select>
+  
+  <select id="count" resultType="integer">
+  	select count(1) from tb_accumulation_fund LEFT JOIN tb_customer ON tb_accumulation_fund.idCard=tb_customer.idCard  
+  	 <where>
+  	 	tb_customer.isGongjijin=0
+    	<if test="accountno!=null and accountno!=''">
+    		and accountNo like concat("%",#{accountno},"%")
+    	</if>
+    	<if test="idcard!=null and idcard!=''">
+    		and idCard like concat("%",#{idcard},"%")
+    	</if>
+    </where>
+  </select>
+  
+  <select id="selectByIdOrName" resultMap="BaseResultMap">
+  	SELECT tb_accumulation_fund.id,NAME, tb_customer.idCard, accountNo,
+  	  payDate, payMoney, proxyFee, tb_accumulation_fund.status, 
+  	  tb_accumulation_fund.createBy, tb_accumulation_fund.createTime, 
+	tb_accumulation_fund.updateBy, tb_accumulation_fund.updateTime, 
+	tb_accumulation_fund.remark   
+	FROM tb_accumulation_fund right JOIN tb_customer ON tb_accumulation_fund.idCard=tb_customer.idCard  
+	<where>
+		<if test="name!=null and name!=''">
+			and name=#{name}
+		</if>
+		<if test="idcard!=null and idcard!=''">
+			and tb_customer.idCard=#{idcard} 
+		</if>
+	</where>
+  </select>
+  
+  <select id="selectByIds" resultMap="BaseResultMap">
+  	SELECT tb_accumulation_fund.id,NAME, tb_accumulation_fund.idCard, accountNo,
+  	payDate, payMoney, proxyFee, tb_accumulation_fund.status, 
+  	tb_accumulation_fund.createBy, tb_accumulation_fund.createTime, 
+	tb_accumulation_fund.updateBy, tb_accumulation_fund.updateTime, 
+	tb_accumulation_fund.remark   
+	FROM tb_accumulation_fund LEFT JOIN tb_customer ON tb_accumulation_fund.idCard=tb_customer.idCard 
+	where tb_accumulation_fund.id in
+	<foreach collection="ids" open="(" separator="," close=")" item="id">
+		#{id}
+	</foreach>
+  </select>
+  
+  <!-- 查询统计的记录 -->
+  <select id="getStatistics" resultType="com.zhidisoft.utils.StatisticsGongjijin">
+  	SELECT a.*, af.accountno,COUNT(1) counts, SUM(paymoney) paymoney, SUM(proxyFee) proxyfee, af.status FROM tb_accumulation_fund af,
+	(SELECT ct.name customername, ct.idcard, cp.name companyname FROM tb_customer ct, tb_company cp WHERE ct.companyid = cp.id
+	<if test="companyName!=null and companyName!=''">
+		and ct.companyid = #{companyName}
+	</if>
+	<if test="customerName!=null and customerName!=''">
+		and ct.name like concat("%", #{customerName}, "%")
+	</if>
+	) a
+	WHERE af.idcard = a.idcard 
+	<if test="idcard!=null and idcard!=''">
+		and af.idcard like concat(#{idcard}, "%") 
+	</if>
+	<if test="accountno!=null and accountno!=''">
+		and accountno like concat(#{accountno}, "%")
+	</if>
+	 GROUP BY af.accountno limit #{page}, #{rows}
+  </select>
+  
+  <!-- 导出excel的方法 -->
+  <select id="getStatisticsBy" resultType="com.zhidisoft.utils.StatisticsGongjijin">
+  	SELECT a.*, af.accountno,COUNT(1) counts, SUM(paymoney) paymoney, SUM(proxyFee) proxyfee, af.status FROM tb_accumulation_fund af,
+	(SELECT ct.name customername, ct.idcard, cp.name companyname FROM tb_customer ct, tb_company cp WHERE ct.companyid = cp.id
+	<if test="companyName!=null and companyName!=''">
+		and ct.companyid = #{companyName}
+	</if>
+	<if test="customerName!=null and customerName!=''">
+		and ct.name like concat("%", #{customerName}, "%")
+	</if>
+	) a
+	WHERE af.idcard = a.idcard 
+	<if test="idcard!=null and idcard!=''">
+		and af.idcard like concat(#{idcard}, "%") 
+	</if>
+	<if test="accountno!=null and accountno!=''">
+		and accountno like concat(#{accountno}, "%")
+	</if>
+	 GROUP BY af.accountno
+  </select>
+  
+  <!-- 查询统计的个数 -->
+  <select id="getStatisticsCount" resultType="integer">
+  	select count(1) from (SELECT a.*, af.accountno,COUNT(1) counts, SUM(paymoney) paymoney, SUM(proxyFee) proxyfee FROM tb_accumulation_fund af,
+	(SELECT ct.name customername, ct.idcard, cp.name companyname FROM tb_customer ct, tb_company cp WHERE ct.companyid = cp.id
+	<if test="companyName!=null and companyName!=''">
+		and ct.companyid = #{companyName}
+	</if>
+	<if test="customerName!=null and customerName!=''">
+		and ct.name like concat("%", #{customerName}, "%")
+	</if>
+	) a
+	WHERE af.idcard = a.idcard 
+	<if test="idcard!=null and idcard!=''">
+		and af.idcard like concat("%", #{idcard}, "%") 
+	</if>
+	<if test="accountno!=null and accountno!=''">
+		and accountno like concat("%", #{accountno}, "%")
+	</if>
+	 GROUP BY af.accountno) a
+  </select>
+  
+  <select id="selectByAccountno" resultMap="BaseResultMap">
+  	 SELECT tb_accumulation_fund.id,NAME, tb_accumulation_fund.idCard, accountNo,
+  	  payDate, payMoney, proxyFee, tb_accumulation_fund.status, 
+  	  tb_accumulation_fund.createBy, tb_accumulation_fund.createTime, 
+	tb_accumulation_fund.updateBy, tb_accumulation_fund.updateTime, 
+	tb_accumulation_fund.remark   
+	FROM tb_accumulation_fund LEFT JOIN tb_customer ON tb_accumulation_fund.idCard=tb_customer.idCard  
+	where accountNo=#{accountno}
+  </select>
+</mapper>

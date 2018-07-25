@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidisoft.business.dao.SocialInsuranceDao">
+  <resultMap id="BaseResultMap" type="com.zhidisoft.business.entity.SocialInsurance">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="idCard" jdbcType="VARCHAR" property="idcard" />
+    <result column="sbCard" jdbcType="VARCHAR" property="sbcard" />
+    <result column="basePay" jdbcType="DOUBLE" property="basepay" />
+    <result column="mustPay" jdbcType="DOUBLE" property="mustpay" />
+    <result column="personRatio" jdbcType="VARCHAR" property="personratio" />
+    <result column="companyRatio" jdbcType="VARCHAR" property="companyratio" />
+    <result column="yanglao" jdbcType="DOUBLE" property="yanglao" />
+    <result column="yiliao" jdbcType="DOUBLE" property="yiliao" />
+    <result column="gongshang" jdbcType="DOUBLE" property="gongshang" />
+    <result column="shiye" jdbcType="DOUBLE" property="shiye" />
+    <result column="shengyu" jdbcType="DOUBLE" property="shengyu" />
+    <result column="payDate" jdbcType="DATE" property="paydate" />
+    <result column="proxyFee" jdbcType="DOUBLE" property="proxyfee" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="createBy" jdbcType="INTEGER" property="createby" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="updateBy" jdbcType="INTEGER" property="updateby" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    
+    <association property="customer" column="idCard" javaType="com.zhidisoft.business.entity.Customer" >
+    	<result column="name" jdbcType="VARCHAR" property="name" />
+    </association>
+  </resultMap>
+ 
+ <!-- 根据ID删除记录 -->
+  <delete id="deleteByPrimaryKey">
+    update tb_social_insurance set status=1 where id=${id}
+  </delete>
+  <insert id="insert" parameterType="com.zhidisoft.business.entity.SocialInsurance">
+    insert into tb_social_insurance (id, idCard, sbCard, 
+      basePay, mustPay, personRatio, 
+      companyRatio, yanglao, yiliao, 
+      gongshang, shiye, shengyu, 
+      payDate, proxyFee, status, 
+      createBy, createTime, updateBy, 
+      updateTime, remark)
+    values (#{id,jdbcType=INTEGER}, #{idcard,jdbcType=VARCHAR}, #{sbcard,jdbcType=VARCHAR}, 
+      #{basepay,jdbcType=DOUBLE}, #{mustpay,jdbcType=DOUBLE}, #{personratio,jdbcType=VARCHAR}, 
+      #{companyratio,jdbcType=VARCHAR}, #{yanglao,jdbcType=DOUBLE}, #{yiliao,jdbcType=DOUBLE}, 
+      #{gongshang,jdbcType=DOUBLE}, #{shiye,jdbcType=DOUBLE}, #{shengyu,jdbcType=DOUBLE}, 
+      #{paydate,jdbcType=DATE}, #{proxyfee,jdbcType=DOUBLE}, '0', 
+      #{createby,jdbcType=INTEGER}, #{createtime,jdbcType=TIMESTAMP}, #{updateby,jdbcType=INTEGER}, 
+      #{updatetime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  
+  <!-- 通过id修改记录 -->
+  <update id="updateByPrimaryKey">
+    update tb_social_insurance
+    set 
+      sbCard = #{socialInsurance.sbcard},
+      basePay = #{socialInsurance.basepay},
+      mustPay = #{socialInsurance.mustpay},
+      personRatio = #{socialInsurance.personratio},
+      companyRatio = #{socialInsurance.companyratio},
+      yanglao = #{socialInsurance.yanglao},
+      yiliao = #{socialInsurance.yiliao},
+      gongshang = #{socialInsurance.gongshang},
+      shiye = #{socialInsurance.shiye},
+      shengyu = #{socialInsurance.shengyu},
+      payDate = #{socialInsurance.paydate},
+      proxyFee = #{socialInsurance.proxyfee},
+      updateBy = #{socialInsurance.updateby},
+      updateTime = #{socialInsurance.updatetime}
+    where id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, idCard, sbCard, basePay, mustPay, personRatio, companyRatio, yanglao, 
+    yiliao, gongshang, shiye, shengyu, payDate, proxyFee, status, createBy, createTime, 
+    updateBy, updateTime, remark
+    from tb_social_insurance
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, idCard, sbCard, basePay, mustPay, personRatio, companyRatio, yanglao, 
+    yiliao, gongshang, shiye, shengyu, payDate, proxyFee, status, createBy, createTime, 
+    updateBy, updateTime, remark
+    from tb_social_insurance
+  </select>
+  
+  <!-- 分页查询 -->
+  <select id="getListByPage" resultType="com.zhidisoft.utils.SocialInsuranceResult">
+  	SELECT si.*, c.name customerName FROM tb_social_insurance si 
+	LEFT JOIN tb_customer c ON si.idCard = c.idCard 
+  	<where>
+  		si.status = '0' 
+  		<if test="customerName!=null and customerName!=''">
+  			and c.name like concat("%",#{customerName},"%")
+  		</if>
+  		<if test="idcard!=null and idcard!=''">
+  			and si.idcard = #{idcard}
+  		</if>
+  		<if test="sbcard!=null and sbcard!=''">
+  			and si.sbcard = #{sbcard}
+  		</if>
+  		
+  	</where>
+  	limit #{page}, #{rows}
+  </select>
+  
+  <!-- 获取总记录数 -->
+  <select id="getCount" resultType="integer">
+  	select count(1) from tb_social_insurance where status=0
+  </select>
+  
+  <!-- 添加社保记录 -->
+  <insert id="addSocialInsurance">
+  	insert into tb_social_insurance(idCard, sbCard, basePay, mustPay, personRatio, companyRatio, yanglao, 
+    yiliao, gongshang, shiye, shengyu, payDate, proxyFee, status, createBy, createTime) 
+    values(
+    #{socialInsurance.idcard}, #{socialInsurance.sbcard}, #{socialInsurance.basepay}, #{socialInsurance.mustpay}, 
+    #{socialInsurance.personratio}, #{socialInsurance.companyratio}, #{socialInsurance.yanglao}, #{socialInsurance.yiliao},
+    #{socialInsurance.gongshang}, #{socialInsurance.shiye}, #{socialInsurance.shengyu}, #{socialInsurance.paydate},
+    #{socialInsurance.proxyfee}, '0', #{socialInsurance.createby},#{socialInsurance.createtime}
+    )
+  </insert>
+  
+  <!-- 验证idcard是否存在 -->
+  <select id="checkIdcard" resultType="com.zhidisoft.business.entity.SocialInsurance">
+  	select id from tb_social_insurance where idcard = #{idcard}
+  </select>
+  
+  <!-- 导出Excel -->
+  <select id="selectByParams" resultType="com.zhidisoft.utils.SocialInsuranceResult">
+  	SELECT si.*, c.name customerName FROM tb_social_insurance si 
+	LEFT JOIN tb_customer c ON si.idCard = c.idCard 
+  	<where>
+  		si.status = '0' 
+  		<if test="customerName!=null and customerName!=''">
+  			and c.name like concat("%",#{customerName},"%")
+  		</if>
+  		<if test="idcard!=null and idcard!=''">
+  			and si.idcard = #{idcard}
+  		</if>
+  		<if test="sbcard!=null and sbcard!=''">
+  			and si.sbcard = #{sbcard}
+  		</if>
+  	</where>
+  </select>
+  
+  <select id="selectByIdCard" resultMap="BaseResultMap">
+  	select id, idCard, sbCard, basePay, mustPay, personRatio, companyRatio, yanglao, 
+    yiliao, gongshang, shiye, shengyu, payDate, proxyFee, status, createBy, createTime, 
+    updateBy, updateTime, remark
+    from tb_social_insurance
+  	where idCard=#{idcard}
+  </select>
+</mapper>

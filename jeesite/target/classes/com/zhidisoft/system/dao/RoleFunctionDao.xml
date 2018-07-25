@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidisoft.system.dao.RoleFunctionDao">
+  <resultMap id="BaseResultMap" type="com.zhidisoft.system.entity.RoleFunction">
+    <id column="roleId" jdbcType="INTEGER" property="roleid" />
+    <id column="funcId" jdbcType="INTEGER" property="funcid" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from tb_role_function
+    where roleId = #{roleid,jdbcType=INTEGER}
+      and funcId = #{funcid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidisoft.system.entity.RoleFunction">
+    insert into tb_role_function (roleId, funcId)
+    values (#{roleid,jdbcType=INTEGER}, #{funcid,jdbcType=INTEGER})
+  </insert>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select roleId, funcId
+    from tb_role_function
+  </select>
+</mapper>

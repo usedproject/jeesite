@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidisoft.business.dao.EmailRecordDao">
+  <resultMap id="BaseResultMap" type="com.zhidisoft.business.entity.EmailRecord">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="to_addr" jdbcType="VARCHAR" property="toAddr" />
+    <result column="subject" jdbcType="VARCHAR" property="subject" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="username" jdbcType="VARCHAR" property="userName" />
+    <result column="sendTime" jdbcType="TIMESTAMP" property="sendtime" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_email_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidisoft.business.entity.EmailRecord">
+    insert into tb_email_record ( user_id, to_addr, 
+      subject, content, sendTime, 
+      status)
+    values ( #{userId,jdbcType=INTEGER}, #{toAddr,jdbcType=VARCHAR}, 
+      #{subject,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{sendtime,jdbcType=TIMESTAMP}, 
+      #{status,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidisoft.business.entity.EmailRecord">
+    update tb_email_record
+    set user_id = #{userId,jdbcType=INTEGER},
+      to_addr = #{toAddr,jdbcType=VARCHAR},
+      subject = #{subject,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      sendTime = #{sendtime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+   select er.id, er.user_id, er.to_addr, er.subject, er.content, er.sendTime, er.status,username
+    from tb_email_record er left join tb_system_user u on er.user_id=u.id
+    where er.id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, user_id, to_addr, subject, content, sendTime, status
+    from tb_email_record
+  </select>
+  <select id="getListByPage" resultMap="BaseResultMap">
+  	select er.id, er.user_id, er.to_addr, er.subject, er.content, er.sendTime, er.status,username
+    from tb_email_record er left join tb_system_user u on er.user_id=u.id
+    <where>
+    	<if test="emailRecord.userName!=null and emailRecord.userName!=''">
+    		and u.username like concat("%",#{emailRecord.userName},"%")
+    	</if>
+    	<if test="emailRecord.toAddr!=null and emailRecord.toAddr!=''">
+    		and er.to_addr like concat("%",#{emailRecord.toAddr},"%")
+    	</if>
+    </where>
+    limit #{page},#{rows}
+  </select>
+  <select id="count" resultType="integer">
+  	select count(1)  from tb_email_record er left join tb_system_user u on er.user_id=u.id
+  	<where>
+    	<if test="emailRecord.userName!=null and emailRecord.userName!=''">
+    		and u.username like concat("%",#{emailRecord.userName},"%")
+    	</if>
+    	<if test="emailRecord.toAddr!=null and emailRecord.toAddr!=''">
+    		and er.to_addr like concat("%",#{emailRecord.toAddr},"%")
+    	</if>
+    </where>
+  </select>
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+  <context id="context1" targetRuntime="myBatis3simple">
+  	<!-- 注释 -->
+		<commentGenerator>
+			<property name="suppressAllComments" value="true" /><!-- 是否取消注释 -->
+			<property name="supperssDate" value="true" /><!-- 是否生成注释代码时间戳 -->
+		</commentGenerator>
+    <jdbcConnection connectionURL="jdbc:mysql://localhost:3306/jeesite" driverClass="com.mysql.jdbc.Driver" password="root" userId="root" />
+   <!-- 生成实体类地址 --> 
+    <javaModelGenerator targetPackage="com.zhidisoft.business.entity" targetProject="jeesite/src/main/java" />
+   <!-- 生成mapxml文件 -->
+    <sqlMapGenerator targetPackage="com.zhidisoft.business.dao" targetProject="jeesite/src/main/resources" />
+   <!-- dao接口 -->
+    <javaClientGenerator targetPackage="com.zhidisoft.business.dao" targetProject="jeesite/src/main/java" type="XMLMAPPER" />
+    <!-- table实体类映射配置 -->
+    
+    <table  tableName="tb_company" domainObjectName="Company" mapperName="CompanyDao"/>
+    <table  tableName="tb_customer" domainObjectName="Customer" mapperName="CustomerDao"/>
+    <table  tableName="tb_social_insurance" domainObjectName="SocialInsurance" mapperName="SocialInsuranceDao"/>
+	<table  tableName="tb_social_insurance_record" domainObjectName="SocialInsuranceRecord" mapperName="SocialInsuranceRecordDao"/>
+	<table  tableName="tb_salary" domainObjectName="Salary" mapperName="SalaryDao"/>
+	<table  tableName="tb_accumulation_fund" domainObjectName="AccumulationFund" mapperName="AccumulationFundDao"/>
+	<table  tableName="tb_need_job" domainObjectName="NeedJob" mapperName="NeedJobDao"/>
+	<table  tableName="tb_person" domainObjectName="Person" mapperName="Person"/>
+	<table  tableName="tb_person_job" domainObjectName="PersonJob" mapperName="PersonJobDao"/>
+	<table  tableName="tb_sms_record" domainObjectName="SmsRecord" mapperName="SmsRecordDao"/>
+	<table  tableName="tb_sms_template" domainObjectName="SmsTemplate" mapperName="SmsTemplateDao"/>
+	<table  tableName="tb_email_record" domainObjectName="EmailRecord" mapperName="EmailRecordDao"/>
+	<table  tableName="tb_email_template" domainObjectName="EmailTemplate" mapperName="EmailTemplateDao"/>
+	<table  tableName="tb_news" domainObjectName="News" mapperName="NewsDao"/>
+	<table  tableName="tb_message" domainObjectName="Message" mapperName="MessageDao"/>
+	<table  tableName="tb_replay" domainObjectName="Replay" mapperName="ReplayDao"/>
+  </context>
+</generatorConfiguration>
+

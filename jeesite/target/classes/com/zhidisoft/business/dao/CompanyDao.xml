@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidisoft.business.dao.CompanyDao">
+  <resultMap id="BaseResultMap" type="com.zhidisoft.business.entity.Company">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="zipcode" jdbcType="VARCHAR" property="zipcode" />
+    <result column="telphone" jdbcType="VARCHAR" property="telphone" />
+    <result column="companyNo" jdbcType="VARCHAR" property="companyno" />
+    <result column="owner" jdbcType="VARCHAR" property="owner" />
+    <result column="idCard" jdbcType="VARCHAR" property="idcard" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="sex" jdbcType="VARCHAR" property="sex" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="companyType" jdbcType="VARCHAR" property="companytype" />
+    <result column="ownership" jdbcType="VARCHAR" property="ownership" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="createBy" jdbcType="INTEGER" property="createby" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="updateBy" jdbcType="INTEGER" property="updateby" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_company
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidisoft.business.entity.Company">
+    insert into tb_company (id, name, address, 
+      zipcode, telphone, companyNo, 
+      owner, idCard, phone, 
+      sex, email, companyType, 
+      ownership, status, createTime, 
+      createBy, updateTime, updateBy, 
+      remark)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{zipcode,jdbcType=VARCHAR}, #{telphone,jdbcType=VARCHAR}, #{companyno,jdbcType=VARCHAR}, 
+      #{owner,jdbcType=VARCHAR}, #{idcard,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
+      #{sex,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{companytype,jdbcType=VARCHAR}, 
+      #{ownership,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP}, 
+      #{createby,jdbcType=INTEGER}, #{updatetime,jdbcType=TIMESTAMP}, #{updateby,jdbcType=INTEGER}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidisoft.business.entity.Company">
+    update tb_company
+    set name = #{name,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      zipcode = #{zipcode,jdbcType=VARCHAR},
+      telphone = #{telphone,jdbcType=VARCHAR},
+      companyNo = #{companyno,jdbcType=VARCHAR},
+      owner = #{owner,jdbcType=VARCHAR},
+      idCard = #{idcard,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      companyType = #{companytype,jdbcType=VARCHAR},
+      ownership = #{ownership,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      createBy = #{createby,jdbcType=INTEGER},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      updateBy = #{updateby,jdbcType=INTEGER},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, name, address, zipcode, telphone, companyNo, owner, idCard, phone, sex, 
+    email, companyType, ownership, status, createTime, createBy, updateTime, updateBy, 
+    remark
+    from tb_company
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, name, address, zipcode, telphone, companyNo, owner, idCard, phone, sex, 
+    email, companyType, ownership, status, createTime, createBy, updateTime, updateBy, 
+    remark
+    from tb_company
+  </select>
+    
+  <select id="getListByPage" resultMap="BaseResultMap">
+  	select id, name, address, zipcode, telphone, companyNo, owner, idCard, phone, sex, 
+    email, companyType, ownership, status, createTime, createBy, updateTime, updateBy, 
+    remark
+    from tb_company
+    <where>
+    	status=0
+    	<if test="name!=null and name!=''">
+    		and name like concat("%",#{name},"%")
+    	</if>
+    	<if test="companyno!=null and companyno!=''">
+    		and companyNo like concat("%",#{companyno},"%")
+    	</if>
+    	<if test="idcard!=null and idcard!=''">
+    		and idCard like concat("%",#{idcard},"%")
+    	</if>
+    </where>
+    limit #{page},#{rows}
+  </select>
+  
+  <select id="count" resultType="integer">
+  	select count(1) from tb_company
+  	<where>
+  		status=0
+    	<if test="name!=null and name!=''">
+    		and name like concat("%",#{name},"%")
+    	</if>
+    	<if test="companyno!=null and companyno!=''">
+    		and companyNo like concat("%",#{companyno},"%")
+    	</if>
+    	<if test="idcard!=null and idcard!=''">
+    		and idCard like concat("%",#{idcard},"%")
+    	</if>
+    </where>
+  </select>
+  
+  <select id="checkName" resultMap="BaseResultMap">
+  	select id, name, address, zipcode, telphone, companyNo, owner, idCard, phone, sex, 
+    email, companyType, ownership, status, createTime, createBy, updateTime, updateBy, 
+    remark from tb_company 
+    where name=#{name}
+  </select>
+
+	<select id="selectByIds" resultMap="BaseResultMap">
+		select id, name, address, zipcode, telphone, companyNo, owner, idCard, phone, sex, 
+	    email, companyType, ownership, status, createTime, createBy, updateTime, updateBy, 
+	    remark
+	    from tb_company where id in 
+	    <foreach collection="ids" item="id" open="(" separator="," close=")">
+	    	#{id}
+	    </foreach>
+	</select>
+	
+	<select id="selectByCompanyNo" resultMap="BaseResultMap">
+		select id, name, address, zipcode, telphone, companyNo, owner, idCard, phone, sex, 
+	    email, companyType, ownership, status, createTime, createBy, updateTime, updateBy, 
+	    remark
+	    from tb_company where companyNo=#{companyno}
+	</select>
+	
+	<update id="deleteById">
+		update tb_company set status=1 where id in
+		<foreach collection="ids" open="(" separator="," close=")" item="id">
+			#{id}
+		</foreach>
+	</update>
+</mapper>

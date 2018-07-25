@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidisoft.business.dao.SmsTemplateDao">
+  <resultMap id="BaseResultMap" type="com.zhidisoft.business.entity.SmsTemplate">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="template_code" jdbcType="VARCHAR" property="templateCode" />
+    <result column="subject" jdbcType="VARCHAR" property="subject" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="order_id" jdbcType="INTEGER" property="orderId" />
+    <result column="createBy" jdbcType="INTEGER" property="createby" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="updateBy" jdbcType="INTEGER" property="updateby" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_sms_template
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidisoft.business.entity.SmsTemplate">
+    insert into tb_sms_template (id, template_code, subject, 
+      content, order_id, createBy, 
+      createTime, updateBy, updateTime
+      )
+    values (#{id,jdbcType=INTEGER}, #{templateCode,jdbcType=VARCHAR}, #{subject,jdbcType=VARCHAR}, 
+      #{content,jdbcType=VARCHAR}, #{orderId,jdbcType=INTEGER}, #{createby,jdbcType=INTEGER}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{updateby,jdbcType=INTEGER}, #{updatetime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidisoft.business.entity.SmsTemplate">
+    update tb_sms_template
+    set template_code = #{templateCode,jdbcType=VARCHAR},
+      subject = #{subject,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      order_id = #{orderId,jdbcType=INTEGER},
+      createBy = #{createby,jdbcType=INTEGER},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      updateBy = #{updateby,jdbcType=INTEGER},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, template_code, subject, content, order_id, createBy, createTime, updateBy, 
+    updateTime
+    from tb_sms_template
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查询所有的短信模板 -->
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, template_code, subject, content, order_id, createBy, createTime, updateBy, 
+    updateTime
+    from tb_sms_template
+  </select>
+  
+  <!-- 分页查询短信模板 -->
+  <select id="getSmsTemplateByPage" resultType="com.zhidisoft.business.entity.SmsTemplate">
+  	select * from tb_sms_template 
+  	<where>
+  		<if test="templateCode!=null and templateCode!=''">
+  			or template_code = #{templateCode}
+  		</if>
+  		<if test="subject!=null and subject!=''">
+  			or subject = #{subject}
+  		</if>
+  	</where>
+  	limit #{page}, #{rows}
+  </select>
+  
+  <!-- 获取短信模板的总记录数 -->
+  <select id="getCount" resultType="integer">
+  	select count(1) from tb_sms_template
+  </select>
+  
+  <!-- 向数据表中添加短信模板记录 -->
+  <insert id="addSmsTemplate">
+  	insert into tb_sms_template(template_code, subject, content, order_id, createby, createtime) 
+  	values(#{smsTemplate.templateCode}, #{smsTemplate.subject}, #{smsTemplate.content}, 
+  	#{smsTemplate.orderId}, #{smsTemplate.createby}, #{smsTemplate.createtime})
+  </insert>
+  
+  <!-- 根据id修改短信模板的记录 -->
+  <update id="editTemplateById">
+  	update tb_sms_template set template_code = #{smsTemplate.templateCode}, subject = #{smsTemplate.subject}, content = #{smsTemplate.content}, 
+  	order_id = #{smsTemplate.orderId}, updateby = #{smsTemplate.updateby}, updatetime = #{smsTemplate.updatetime}
+  	where id = #{id}
+  </update>
+  
+  <!-- 根据id删除短信模板的记录 -->
+  <update id="removeTemplateById">
+  	update  tb_sms_template set status=1 where id = #{id}
+  </update>
+  
+</mapper>

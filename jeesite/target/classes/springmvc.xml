@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	
+	<!-- 开启扫描，扫描Controller层，主要是将controller层的注解路径等进行扫描 -->
+	<context:component-scan base-package="com.zhidisoft.**.controller" />
+	
+	<!-- mvc注解开关 -->
+	<mvc:annotation-driven />
+	
+	<!-- 将 通用多部件解析器 注入到ioc容器中 id: 一定配置为 multipartResolver ，它是 前端控制器 DispatcherServlet 中一个属性，-->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 设置默认的请求字符编码集,一定要和jsp中的字符编码集一致，才能够正确的解析表单的内容 -->
+			<property name="defaultEncoding" value="UTF-8" />
+		<!-- 设置文件的最大 大小  ， 单位 字节，    bit  byte  kb  M     6*1024*1024-->
+			<property name="maxUploadSize" value="6291456" /> 
+	</bean>
+	
+	<!-- 视图解析器 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/content/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+</beans>

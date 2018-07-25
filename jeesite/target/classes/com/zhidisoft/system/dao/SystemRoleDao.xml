@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidisoft.system.dao.SystemRoleDao">
+  <resultMap id="BaseResultMap" type="com.zhidisoft.system.entity.SystemRole">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="roleName" jdbcType="VARCHAR" property="rolename" />
+    <result column="sortnum" jdbcType="INTEGER" property="sortnum" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="createBy" jdbcType="INTEGER" property="createby" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="updateBy" jdbcType="INTEGER" property="updateby" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="roleNote" jdbcType="VARCHAR" property="rolenote" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_system_role
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidisoft.system.entity.SystemRole" useGeneratedKeys="true" keyColumn="id" keyProperty="role.id">
+    insert into tb_system_role (roleName, sortnum, 
+      status, createBy, createTime, 
+      updateBy, updateTime, roleNote
+      )
+    values (#{role.rolename}, #{role.sortnum}, 
+      #{role.status}, #{role.createby}, #{role.createtime}, 
+      #{role.updateby}, #{role.updatetime}, #{role.rolenote}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidisoft.system.entity.SystemRole">
+    update tb_system_role
+    set roleName = #{rolename,jdbcType=VARCHAR},
+      sortnum = #{sortnum,jdbcType=INTEGER},
+      status = #{status,jdbcType=VARCHAR},
+      updateBy = #{updateby,jdbcType=INTEGER},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      roleNote = #{rolenote,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey"  resultMap="BaseResultMap">
+    select id, roleName, sortnum, status, createBy, createTime, updateBy, updateTime, 
+    roleNote
+    from tb_system_role
+    where id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, roleName, sortnum, status, createBy, createTime, updateBy, updateTime, 
+    roleNote
+    from tb_system_role
+  </select>
+  
+  <select id="getRoleListByUserId" resultMap="BaseResultMap">
+  	select * from tb_system_role where id in (select roleId from tb_user_role where userId=#{id})
+  </select>
+  
+  <delete id="removeFromUserRole">
+  	delete from tb_user_role where userId in
+  	<foreach collection="uids" open="(" separator="," close=")" item="uid">
+  		#{uid}
+  	</foreach>
+  </delete>
+  
+  <insert id="insertIntoUserRole">
+  	insert into tb_user_role values
+  	<foreach collection="uids" item="uid">
+  		<foreach collection="rids" item="rid" separator=",">
+  			(#{uid},#{rid})
+  		</foreach>
+  	</foreach>
+  </insert>
+  
+  <select id="getRoleListByPage" resultMap="BaseResultMap">
+  	select * from tb_system_role 
+  	<where>
+  		<if test="rolename!=null and rolename!=''">
+  			roleName like concat('%',#{rolename},'%')
+  		</if>
+  	</where>
+  	limit #{page},#{rows}
+  </select>
+  
+  <select id="count" resultType="integer">
+  	select count(1) from tb_system_role
+  	<where>
+  		<if test="rolename!=null and rolename!=''">
+  			roleName like concat('%',#{rolename},'%')
+  		</if>
+  	</where>
+  </select>
+  
+  <insert id="insertIntoRoleFunctuion" >
+  	insert into tb_role_function values 
+  		<foreach collection="functionIds" item="functionId" separator=",">
+  			(#{rid},#{functionId})
+  		</foreach>
+  </insert>
+  
+  <delete id="removeFromRoleFunction">
+  	delete from tb_role_function where roleId=#{rid}
+  </delete>
+  
+  <update id="deleteByIds" >
+  	update tb_system_role set status=1 where id in
+  	<foreach collection="roleIds" open="(" separator="," close=")" item="id">
+  		#{id}
+  	</foreach>
+  </update>
+</mapper>

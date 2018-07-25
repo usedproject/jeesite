@@ -1,0 +1,4 @@
+	a:link {color: blue; text-decoration: none}     /* 未访问的链接 */
+	a:visited {color: blue}  /* 已访问的链接 */
+	a:hover {color: green}    /* 当有鼠标悬停在链接上 */
+	a:active {color: green}   /* 被选择的链接 */

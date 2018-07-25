@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidisoft.business.dao.ReplayDao">
+  <resultMap id="BaseResultMap" type="com.zhidisoft.business.entity.Replay">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="messageId" jdbcType="INTEGER" property="messageid" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="replayTime" jdbcType="TIMESTAMP" property="replaytime" />
+    <result column="replayBy" jdbcType="INTEGER" property="replayby" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_replay
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidisoft.business.entity.Replay">
+    insert into tb_replay (id, messageId, status, 
+      replayTime, replayBy, remark, 
+      content)
+    values (#{id,jdbcType=INTEGER}, #{messageid,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR}, 
+      #{replaytime,jdbcType=TIMESTAMP}, #{replayby,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, 
+      #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidisoft.business.entity.Replay">
+    update tb_replay
+    set messageId = #{messageid,jdbcType=INTEGER},
+      status = #{status,jdbcType=VARCHAR},
+      replayTime = #{replaytime,jdbcType=TIMESTAMP},
+      replayBy = #{replayby,jdbcType=INTEGER},
+      remark = #{remark,jdbcType=VARCHAR},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, messageId, status, replayTime, replayBy, remark, content
+    from tb_replay
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, messageId, status, replayTime, replayBy, remark, content
+    from tb_replay
+  </select>
+</mapper>

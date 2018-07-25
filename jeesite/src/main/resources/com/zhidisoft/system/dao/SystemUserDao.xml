@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidisoft.system.dao.SystemUserDao">
+  <resultMap id="BaseResultMap" type="com.zhidisoft.system.entity.SystemUser">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="sortnum" jdbcType="INTEGER" property="sortnum" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="createBy" jdbcType="INTEGER" property="createby" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="updateBy" jdbcType="INTEGER" property="updateby" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="userNote" jdbcType="VARCHAR" property="usernote" />
+  </resultMap>
+  
+  <resultMap type="com.zhidisoft.system.entity.SystemUser" id="rolesresultmap" extends="BaseResultMap">
+  	<collection property="roles" column="id"  select="com.zhidisoft.system.dao.SystemRoleDao.getRoleListByUserId"></collection>
+  </resultMap>
+  
+  <update id="deleteByPrimaryKey" >
+    update  tb_system_user set status=1 where id in
+    <foreach collection="uids" item="uid" open="(" separator="," close=")">
+    	#{uid}
+    </foreach>
+  </update>
+  
+  <insert id="insert" parameterType="com.zhidisoft.system.entity.SystemUser" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into tb_system_user ( username, password, 
+      email, phone, sortnum, 
+      status, createBy, createTime, 
+      updateBy, updateTime, userNote
+      )
+    values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{email,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{sortnum,jdbcType=INTEGER}, 
+      #{status,jdbcType=VARCHAR}, #{createby,jdbcType=INTEGER}, #{createtime,jdbcType=TIMESTAMP}, 
+      #{updateby,jdbcType=INTEGER}, #{updatetime,jdbcType=TIMESTAMP}, #{usernote,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidisoft.system.entity.SystemUser">
+    update tb_system_user
+    set username = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      sortnum = #{sortnum,jdbcType=INTEGER},
+      status = #{status,jdbcType=VARCHAR},
+      createBy = #{createby,jdbcType=INTEGER},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      updateBy = #{updateby,jdbcType=INTEGER},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      userNote = #{usernote,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey"  resultMap="BaseResultMap">
+    select id, username, password, email, phone, sortnum, status, createBy, createTime, 
+    updateBy, updateTime, userNote
+    from tb_system_user
+    where id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, username, password, email, phone, sortnum, status, createBy, createTime, 
+    updateBy, updateTime, userNote
+    from tb_system_user
+  </select>
+  
+   <select id="getUserByUsername"  resultMap="BaseResultMap">
+    select id, username, password, email, phone, sortnum, status, createBy, createTime, 
+    updateBy, updateTime, userNote
+    from tb_system_user
+    where username = #{username}
+  </select>
+  
+  <update id="editUser" parameterType="com.zhidisoft.system.entity.SystemUser">
+  	update tb_system_user set 
+  	username=#{user.username},
+  	email=#{user.email},
+  	phone=#{user.phone},
+  	usernote=#{user.usernote},
+  	sortnum = #{user.sortnum},
+  	status = #{user.status}
+  	where id=#{user.id}
+  </update>
+  
+  <update id="modifypassword" parameterType="com.zhidisoft.system.entity.SystemUser">
+  	update tb_system_user set 
+  	password=#{user.password}
+  	where id=#{user.id}
+  </update>
+  
+  <select id="getListByPage" resultMap="rolesresultmap">
+  	select * from tb_system_user 
+  	<where>
+  	<if test="username!=null and username!=''">
+  		and username like concat('%',#{username},'%')
+  	</if>
+  	<if test="phone!=null and phone!=''">
+  		and phone like concat('%',#{phone},'%')
+  	</if>
+  	<if test="status!=null and status!=''">
+  		and status =#{status}
+  	</if>
+  	</where>
+  		limit #{page},#{rows}
+  </select>
+  
+  <select id="count" resultType="integer">
+  	select count(1) from tb_system_user 
+  	<where>
+  	<if test="username!=null and username!=''">
+  		and username like concat('%',#{username},'%')
+  	</if>
+  	<if test="phone!=null and phone!=''">
+  		and phone like concat('%',#{phone},'%')
+  	</if>
+  	<if test="status!=null and status!=''">
+  		and status =#{status}
+  	</if>
+  	</where>
+  </select>
+  
+  <insert id="insertIntoUserRoles">
+  	insert into tb_user_role values
+  	<foreach collection="userRoleList" item="roleId" separator=",">
+  		(#{uid},#{roleId})
+  	</foreach>
+  </insert>
+  
+  <delete id="removeFromUserRole">
+  	delete from tb_user_role where userId =#{id}
+  </delete>
+</mapper>

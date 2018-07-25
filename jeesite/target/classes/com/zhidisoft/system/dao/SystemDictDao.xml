@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidisoft.system.dao.SystemDictDao">
+  <resultMap id="BaseResultMap" type="com.zhidisoft.system.entity.SystemDict">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="value" jdbcType="VARCHAR" property="value" />
+    <result column="label" jdbcType="VARCHAR" property="label" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="parentId" jdbcType="INTEGER" property="parentid" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="createBy" jdbcType="INTEGER" property="createby" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="updateBy" jdbcType="INTEGER" property="updateby" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_system_dict
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidisoft.system.entity.SystemDict">
+    insert into tb_system_dict (id, name, value, 
+      label, description, sort, 
+      parentId, status, createBy, 
+      createTime, updateBy, updateTime
+      )
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{value,jdbcType=VARCHAR}, 
+      #{label,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER}, 
+      #{parentid,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR}, #{createby,jdbcType=INTEGER}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{updateby,jdbcType=INTEGER}, #{updatetime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidisoft.system.entity.SystemDict">
+    update tb_system_dict
+    set name = #{name,jdbcType=VARCHAR},
+      value = #{value,jdbcType=VARCHAR},
+      label = #{label,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      sort = #{sort,jdbcType=INTEGER},
+      parentId = #{parentid,jdbcType=INTEGER},
+      status = #{status,jdbcType=VARCHAR},
+      createBy = #{createby,jdbcType=INTEGER},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      updateBy = #{updateby,jdbcType=INTEGER},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, name, value, label, description, sort, parentId, status, createBy, createTime, 
+    updateBy, updateTime
+    from tb_system_dict
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 获取所有的数据字典列表 -->
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, name, value, label, description, sort, parentId, status, createBy, createTime, 
+    updateBy, updateTime
+    from tb_system_dict
+    <where>
+	    <if test="name!=null and name!=''">
+	    	name = #{name}
+	    </if>
+    </where>
+  </select>
+  
+  <!-- 分页查询数据字典，并返回列表 -->
+  <select id="selectDictByPage" resultMap="BaseResultMap">
+  	select id, name, value, label, description, sort, parentId, status, createBy, createTime, 
+    updateBy, updateTime
+    from tb_system_dict
+    <where>
+    	<if test="name!=null and name!=''">
+    		and name like concat('%',#{name},'%')
+    	</if>
+    	<if test="status!=null and status!=''">
+    		or status=#{status}
+    	</if>
+    </where>
+     limit #{page}, #{rows}
+  </select>
+  
+  <!-- 获取数据字典的数量 -->
+  <select id="getDictCount" resultType="integer">
+  	select count(1) from tb_system_dict 
+  	<where>
+  		<if test="name!=null and name!=''">
+    		and name like concat('%',#{name},'%')
+    	</if>
+    	<if test="status!=null and status!=''">
+    		or status=#{status}
+    	</if>
+  	</where>
+  </select>
+  
+  <!-- 获取数据字典中所有的状态 -->
+  <select id="getDictStatus" resultType="string">
+  	select distinct status from tb_system_dict
+  </select>
+  
+  <!-- 获取数据字典中所有的名称 -->
+  <select id="getDictName" resultType="string">
+  	select distinct name from tb_system_dict
+  </select>
+  
+  <!-- 向数据字典中添加记录 -->
+  <insert id="addDict" parameterType="com.zhidisoft.system.entity.SystemDict">
+  	insert into tb_system_dict(name, value, label, description, sort, status, createBy, createTime) 
+  	values(#{systemDict.name}, #{systemDict.value}, #{systemDict.label}, #{systemDict.description}, 
+  	#{systemDict.sort}, #{systemDict.status}, #{systemDict.createby},#{systemDict.createtime} )
+  </insert>
+  
+  <!-- 修改数据字典中的记录 -->
+  <update id="editDict">
+  	update tb_system_dict set name=#{systemDict.name}, value=#{systemDict.value}, label=#{systemDict.label}, 
+  	description=#{systemDict.description}, sort=#{systemDict.sort}, status=#{systemDict.status},
+  	updateby=#{systemDict.updateby}, updatetime=#{systemDict.updatetime}
+  	where id=#{id}
+  </update>
+  
+  <!-- 删除数据字典中的某条记录 -->
+  <update id="removeDict">
+  	update tb_system_dict set status=1 where id = #{id}
+  </update>
+</mapper>

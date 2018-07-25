@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidisoft.business.dao.SmsRecordDao">
+  <resultMap id="BaseResultMap" type="com.zhidisoft.business.entity.SmsRecord">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="telephone" jdbcType="VARCHAR" property="telephone" />
+    <result column="sendTime" jdbcType="TIMESTAMP" property="sendtime" />
+    <result column="username" jdbcType="VARCHAR" property="userName"  />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_sms_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidisoft.business.entity.SmsRecord">
+    insert into tb_sms_record ( user_id, telephone, 
+      sendTime, content)
+    values ( #{userId,jdbcType=INTEGER}, #{telephone,jdbcType=VARCHAR}, 
+      #{sendtime,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidisoft.business.entity.SmsRecord">
+    update tb_sms_record
+    set user_id = #{userId,jdbcType=INTEGER},
+      telephone = #{telephone,jdbcType=VARCHAR},
+      sendTime = #{sendtime,jdbcType=TIMESTAMP},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select sr.id, sr.user_id, sr.telephone, sr.sendTime, sr.content,u.username
+    from tb_sms_record sr left join tb_system_user u on sr.user_id=u.id
+    where sr.id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, user_id, telephone, sendTime, content
+    from tb_sms_record
+  </select>
+  <select id="getListByPage" resultMap="BaseResultMap">
+  	select sr.id, sr.user_id, sr.telephone, sr.sendTime, sr.content,u.username
+    from tb_sms_record sr left join tb_system_user u on sr.user_id=u.id
+    <where>
+    	<if test="smsRecord.userName!=null and smsRecord.userName!=''">
+    		and u.username like concat("%",#{smsRecord.userName},"%") 
+    	</if>
+    	<if test="smsRecord.telephone!=null and smsRecord.telephone!=''">
+    		and sr.telephone like concat("%",#{smsRecord.telephone},"%")
+    	</if>
+    </where>
+    limit #{page},#{rows}
+  </select>
+  <select id="count" resultType="integer">
+  	select count(1)
+    from tb_sms_record sr left join tb_system_user u on sr.user_id=u.id
+    <where>
+    	<if test="smsRecord.userName!=null and smsRecord.userName!=''">
+    		and u.username like concat("%",#{smsRecord.userName},"%") 
+    	</if>
+    	<if test="smsRecord.telephone!=null and smsRecord.telephone!=''">
+    		and sr.telephone like concat("%",#{smsRecord.telephone},"%")
+    	</if>
+    </where>
+  </select>
+</mapper>

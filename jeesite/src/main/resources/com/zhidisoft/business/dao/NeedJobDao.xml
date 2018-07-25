@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidisoft.business.dao.NeedJobDao">
+  <resultMap id="BaseResultMap" type="com.zhidisoft.business.entity.NeedJob">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="jobName" jdbcType="VARCHAR" property="jobname" />
+    <result column="JobContent" jdbcType="VARCHAR" property="jobcontent" />
+    <result column="jobType" jdbcType="VARCHAR" property="jobtype" />
+    <result column="industry" jdbcType="VARCHAR" property="industry" />
+    <result column="needPerson" jdbcType="INTEGER" property="needperson" />
+    <result column="payType" jdbcType="VARCHAR" property="paytype" />
+    <result column="price" jdbcType="DOUBLE" property="price" />
+    <result column="companyId" jdbcType="INTEGER" property="companyid" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="startTime" jdbcType="DATE" property="starttime" />
+    <result column="endTime" jdbcType="DATE" property="endtime" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="infoType" jdbcType="VARCHAR" property="infotype" />
+    <result column="createBy" jdbcType="INTEGER" property="createby" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="updateBy" jdbcType="INTEGER" property="updateby" />
+    <result column="name"  property="companyName" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_need_job
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidisoft.business.entity.NeedJob">
+    insert into tb_need_job ( jobName, JobContent, 
+      jobType, industry, needPerson, 
+      payType, price, companyId, 
+      address, startTime, endTime, 
+      status, infoType, createBy, 
+      createTime, updateBy, updateTime, 
+      remark)
+    values ( #{jobname,jdbcType=VARCHAR}, #{jobcontent,jdbcType=VARCHAR}, 
+      #{jobtype,jdbcType=VARCHAR}, #{industry,jdbcType=VARCHAR}, #{needperson,jdbcType=INTEGER}, 
+      #{paytype,jdbcType=VARCHAR}, #{price,jdbcType=DOUBLE}, #{companyid,jdbcType=INTEGER}, 
+      #{address,jdbcType=VARCHAR}, #{starttime,jdbcType=DATE}, #{endtime,jdbcType=DATE}, 
+      #{status,jdbcType=VARCHAR}, #{infotype,jdbcType=VARCHAR}, #{createby,jdbcType=INTEGER}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{updateby,jdbcType=INTEGER}, #{updatetime,jdbcType=TIMESTAMP}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidisoft.business.entity.NeedJob">
+    update tb_need_job
+    set jobName = #{jobname,jdbcType=VARCHAR},
+      JobContent = #{jobcontent,jdbcType=VARCHAR},
+      jobType = #{jobtype,jdbcType=VARCHAR},
+      industry = #{industry,jdbcType=VARCHAR},
+      needPerson = #{needperson,jdbcType=INTEGER},
+      payType = #{paytype,jdbcType=VARCHAR},
+      price = #{price,jdbcType=DOUBLE},
+      companyId = #{companyid,jdbcType=INTEGER},
+      address = #{address,jdbcType=VARCHAR},
+      startTime = #{starttime,jdbcType=DATE},
+      endTime = #{endtime,jdbcType=DATE},
+      status = #{status,jdbcType=VARCHAR},
+      infoType = #{infotype,jdbcType=VARCHAR},
+      updateBy = #{updateby,jdbcType=INTEGER},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+   select j.id, j.jobName, j.JobContent, j.jobType, j.industry, j.needPerson, j.payType, j.price, j.companyId, 
+    j.address, j.startTime, j.endTime, j.status, j.infoType, j.createBy, j.createTime, j.updateBy, j.updateTime, 
+    j.remark,name
+    from tb_need_job j left join tb_company c on c.id=j.companyId
+    where j.id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, jobName, JobContent, jobType, industry, needPerson, payType, price, companyId, 
+    address, startTime, endTime, status, infoType, createBy, createTime, updateBy, updateTime, 
+    remark
+    from tb_need_job
+  </select>
+  
+  <select id="getListByPage" resultMap="BaseResultMap">
+  	select j.id, j.jobName, j.JobContent, j.jobType, j.industry, j.needPerson, j.payType, j.price, j.companyId, 
+    j.address, j.startTime, j.endTime, j.status, j.infoType, j.createBy, j.createTime, j.updateBy, j.updateTime, 
+    j.remark,name
+    from tb_need_job j left join tb_company c on c.id=j.companyId
+    <where>
+    	<if test="needJob.jobname!=null and needJob.jobname!=''">
+    		and jobName like concat("%",#{needJob.jobname},"%")
+    	</if>
+    	<if test="needJob.jobtype!=null and needJob.jobtype!=''">
+    		and jobType like concat("%",#{needjob.jobtype},"%")
+    	</if>
+    	<if test="needJob.companyid!=null ">
+    		and companyId = #{needJob.companyid}
+    	</if>
+    	<if test="needJob.industry!=null and needJob.industry!=''">
+    		and industry =#{needJob.industry}
+    	</if>
+    </where>
+    limit #{page},#{rows}
+  </select>
+  
+  <select id="count" resultType="integer">
+  		select count(1) from tb_need_job
+  	<where>
+    	<if test="needJob.jobname!=null and needJob.jobname!=''">
+    		and jobName like concat("%",#{needJob.jobname},"%")
+    	</if>
+    	<if test="needJob.jobtype!=null and needJob.jobtype!=''">
+    		and jobType like concat("%",#{needjob.jobtype},"%")
+    	</if>
+    	<if test="needJob.companyid!=null ">
+    		and companyId = #{needJob.companyid}
+    	</if>
+    	<if test="needJob.industry!=null and needJob.industry!=''">
+    		and industry =#{needJob.industry}
+    	</if>
+    </where>
+  </select>
+</mapper>

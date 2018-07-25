@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidisoft.business.dao.PersonJobDao">
+  <resultMap id="BaseResultMap" type="com.zhidisoft.business.entity.PersonJob">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="idCard" jdbcType="VARCHAR" property="idcard" />
+    <result column="companyId" jdbcType="INTEGER" property="companyid" />
+    <result column="jobType" jdbcType="VARCHAR" property="jobtype" />
+    <result column="companyPrice" jdbcType="DOUBLE" property="companyprice" />
+    <result column="personPrice" jdbcType="DOUBLE" property="personprice" />
+    <result column="jobContent" jdbcType="VARCHAR" property="jobcontent" />
+    <result column="startTime" jdbcType="DATE" property="starttime" />
+    <result column="endTime" jdbcType="DATE" property="endtime" />
+    <result column="contractURL" jdbcType="VARCHAR" property="contracturl" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="createBy" jdbcType="INTEGER" property="createby" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="updateBy" jdbcType="INTEGER" property="updateby" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="c_name" jdbcType="VARCHAR" property="companyName" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_person_job
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidisoft.business.entity.PersonJob">
+    insert into tb_person_job (idCard, companyId, 
+      jobType, companyPrice, personPrice, 
+      jobContent, startTime, endTime, 
+      contractURL, status, createBy, 
+      createTime, updateBy, updateTime, 
+      remark)
+    values ( #{idcard,jdbcType=VARCHAR}, #{companyid,jdbcType=INTEGER}, 
+      #{jobtype,jdbcType=VARCHAR}, #{companyprice,jdbcType=DOUBLE}, #{personprice,jdbcType=DOUBLE}, 
+      #{jobcontent,jdbcType=VARCHAR}, #{starttime,jdbcType=DATE}, #{endtime,jdbcType=DATE}, 
+      #{contracturl,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{createby,jdbcType=INTEGER}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{updateby,jdbcType=INTEGER}, #{updatetime,jdbcType=TIMESTAMP}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidisoft.business.entity.PersonJob">
+    update tb_person_job
+    set idCard = #{idcard,jdbcType=VARCHAR},
+      companyId = #{companyid,jdbcType=INTEGER},
+      jobType = #{jobtype,jdbcType=VARCHAR},
+      companyPrice = #{companyprice,jdbcType=DOUBLE},
+      personPrice = #{personprice,jdbcType=DOUBLE},
+      jobContent = #{jobcontent,jdbcType=VARCHAR},
+      startTime = #{starttime,jdbcType=DATE},
+      endTime = #{endtime,jdbcType=DATE},
+      contractURL = #{contracturl,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      updateBy = #{updateby,jdbcType=INTEGER},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+   select p.id, p.idCard, p.companyId, p.jobType, p.companyPrice, p.personPrice, p.jobContent, p.startTime, 
+    p.endTime, p.contractURL, p.status, p.createBy, p.createTime, p.updateBy, p.updateTime, p.remark,c.name,tc.name c_name
+    from tb_person_job p left join tb_customer c on p.idCard=c.idCard left join tb_company tc on p.companyId=tc.id
+    where p.id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, idCard, companyId, jobType, companyPrice, personPrice, jobContent, startTime, 
+    endTime, contractURL, status, createBy, createTime, updateBy, updateTime, remark
+    from tb_person_job
+  </select>
+  
+  <select id="getListByPage" resultMap="BaseResultMap">
+  	select p.id, p.idCard, p.companyId, p.jobType, p.companyPrice, p.personPrice, p.jobContent, p.startTime, 
+    p.endTime, p.contractURL, p.status, p.createBy, p.createTime, p.updateBy, p.updateTime, p.remark,c.name,tc.name c_name
+    from tb_person_job p left join tb_customer c on p.idCard=c.idCard left join tb_company tc on p.companyId=tc.id
+    <where>
+    	<if test="personJob.name!=null and personJob.name!=''">
+    		and c.name like concat("%",#{personJob.name},"%")
+    	</if>
+    	<if test="personJob.idcard!=null and personJob.idcard!=''">
+    		and p.idCard like concat("%",#{personJob.idcard},"%")
+    	</if>
+    	<if test="personJob.companyid!=null and personJob.companyid!=''">
+    		and p.companyId=#{personJob.companyid}
+    	</if>
+    </where>
+    limit #{page},#{rows}
+  </select>
+  
+  <select id="count" resultType="integer">
+  	select count(1) from tb_person_job p left join tb_customer c on p.idCard=c.idCard
+  	 <where>
+    	<if test="personJob.name!=null and personJob.name!=''">
+    		and c.name like concat("%",#{personJob.name},"%")
+    	</if>
+    	<if test="personJob.idcard!=null and personJob.idcard!=''">
+    		and p.idCard like concat("%",#{personJob.idcard},"%")
+    	</if>
+    	<if test="personJob.companyid!=null and personJob.companyid!=''">
+    		and p.companyId=#{personJob.companyid}
+    	</if>
+    </where>
+  </select>
+  
+  <!-- 查询统计信息 -->
+  <select id="getStatistics" resultType="com.zhidisoft.utils.StatisticsRencai">
+  	SELECT ct.name customerName, ct.idCard, ct.phone, TIMESTAMPDIFF(MONTH,endtime,starttime)+1 months, cp.name companyName, pj.companyPrice, pj.personPrice,(pj.companyPrice-pj.personPrice) profit, pj.status  FROM tb_person_job pj 
+	LEFT JOIN tb_customer ct
+	ON pj.idcard = ct.idcard
+	LEFT JOIN tb_company cp
+	ON pj.companyid = cp.id
+	<where>
+		<if test="customerName!=null and customerName!=''">
+			and ct.name like concat(#{customerName}, "%")
+		</if>
+		<if test="idcard!=null and idcard!=''">
+			and ct.idcard like concat(#{idcard}, "%")
+		</if>
+		<if test="phone!=null and phone!=''">
+			and ct.phone like concat(#{phone}, "%")
+		</if>
+		<if test="companyName!=null and companyName!=''">
+			and cp.id = #{companyName}
+		</if>
+	</where>
+	limit #{page}, #{rows}
+  </select>
+  
+  <!-- 查询统计信息的数量 -->
+  <select id="getStatisticsCount" resultType="integer">
+  	select count(1) from (SELECT ct.name customerName, ct.idCard, ct.phone, TIMESTAMPDIFF(MONTH,endtime,starttime)+1 months, cp.name companyName, pj.companyPrice, pj.personPrice,(pj.companyPrice-pj.personPrice) profit, pj.status  FROM tb_person_job pj 
+	LEFT JOIN tb_customer ct
+	ON pj.idcard = ct.idcard
+	LEFT JOIN tb_company cp
+	ON pj.companyid = cp.id
+	<where>
+		<if test="customerName!=null and customerName!=''">
+			and ct.name like concat(#{customerName}, "%")
+		</if>
+		<if test="idcard!=null and idcard!=''">
+			and ct.idcard like concat(#{idcard}, "%")
+		</if>
+		<if test="phone!=null and phone!=''">
+			and ct.phone like concat(#{phone}, "%")
+		</if>
+		<if test="companyName!=null and companyName!=''">
+			and cp.id = #{companyName}
+		</if>
+	</where>) a
+  </select>
+</mapper>

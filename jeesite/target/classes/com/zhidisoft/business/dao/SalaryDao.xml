@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidisoft.business.dao.SalaryDao">
+  <resultMap id="BaseResultMap" type="com.zhidisoft.business.entity.Salary">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="idCard" jdbcType="VARCHAR" property="idcard" />
+    <result column="payCard" jdbcType="VARCHAR" property="paycard" />
+    <result column="payDate" jdbcType="DATE" property="paydate" />
+    <result column="baseSalary" jdbcType="DOUBLE" property="basesalary" />
+    <result column="bonusPay" jdbcType="DOUBLE" property="bonuspay" />
+    <result column="overtimePay" jdbcType="DOUBLE" property="overtimepay" />
+    <result column="shebaoPay" jdbcType="DOUBLE" property="shebaopay" />
+    <result column="gongjijinPay" jdbcType="DOUBLE" property="gongjijinpay" />
+    <result column="taxPay" jdbcType="DOUBLE" property="taxpay" />
+    <result column="totalPay" jdbcType="DOUBLE" property="totalpay" />
+    <result column="mustPay" jdbcType="DOUBLE" property="mustpay" />
+    <result column="proxyFee" jdbcType="DOUBLE" property="proxyfee" />
+    <result column="createBy" jdbcType="INTEGER" property="createby" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="updateBy" jdbcType="INTEGER" property="updateby" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_salary
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 向表中插入记录 -->
+  <insert id="insert" parameterType="com.zhidisoft.business.entity.Salary">
+    insert into tb_salary (idCard, payCard, 
+      payDate, baseSalary, bonusPay, 
+      overtimePay, shebaoPay, gongjijinPay, 
+      taxPay, totalPay, mustPay, 
+      proxyFee, createBy, createTime
+      )
+    values (#{salary.idcard,jdbcType=VARCHAR}, #{salary.paycard,jdbcType=VARCHAR}, 
+      #{salary.paydate,jdbcType=DATE}, #{salary.basesalary,jdbcType=DOUBLE}, #{salary.bonuspay,jdbcType=DOUBLE}, 
+      #{salary.overtimepay,jdbcType=DOUBLE}, #{salary.shebaopay,jdbcType=DOUBLE}, #{salary.gongjijinpay,jdbcType=DOUBLE}, 
+      #{salary.taxpay,jdbcType=DOUBLE}, #{salary.totalpay,jdbcType=DOUBLE}, #{salary.mustpay,jdbcType=DOUBLE}, 
+      #{salary.proxyfee,jdbcType=DOUBLE}, #{salary.createby,jdbcType=INTEGER}, #{salary.createtime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidisoft.business.entity.Salary">
+    update tb_salary
+    set idCard = #{idcard,jdbcType=VARCHAR},
+      payCard = #{paycard,jdbcType=VARCHAR},
+      payDate = #{paydate,jdbcType=DATE},
+      baseSalary = #{basesalary,jdbcType=DOUBLE},
+      bonusPay = #{bonuspay,jdbcType=DOUBLE},
+      overtimePay = #{overtimepay,jdbcType=DOUBLE},
+      shebaoPay = #{shebaopay,jdbcType=DOUBLE},
+      gongjijinPay = #{gongjijinpay,jdbcType=DOUBLE},
+      taxPay = #{taxpay,jdbcType=DOUBLE},
+      totalPay = #{totalpay,jdbcType=DOUBLE},
+      mustPay = #{mustpay,jdbcType=DOUBLE},
+      proxyFee = #{proxyfee,jdbcType=DOUBLE},
+      createBy = #{createby,jdbcType=INTEGER},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      updateBy = #{updateby,jdbcType=INTEGER},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, idCard, payCard, payDate, baseSalary, bonusPay, overtimePay, shebaoPay, 
+    gongjijinPay, taxPay, totalPay, mustPay, proxyFee, createBy, createTime, updateBy, 
+    updateTime, remark
+    from tb_salary
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, idCard, payCard, payDate, baseSalary, bonusPay, overtimePay, shebaoPay, 
+    gongjijinPay, taxPay, totalPay, mustPay, proxyFee, createBy, createTime, updateBy, 
+    updateTime, remark
+    from tb_salary order by payDate asc
+  </select>
+  
+  <!-- 分页查询工资记录 -->
+  <select id="selectSalaryByPage" resultType="com.zhidisoft.utils.SalaryResult">
+  	SELECT ct.name customerName, sl.* FROM tb_salary sl 
+	LEFT JOIN tb_customer ct ON sl.idCard = ct.idCard
+	<where>
+		<if test="customerName!=null and customerName!=''">
+			ct.name like concat("%",#{customerName},"%") 
+		</if>
+		<if test="idcard!=null and idcard!=''">
+			sl.idCard like concat("%", #{idcard}, "%")
+		</if>
+	</where>
+	limit #{page}, #{rows}
+  </select>
+  
+   <!-- 按照条件查询工资记录 -->
+  <select id="selectSalary" resultType="com.zhidisoft.utils.SalaryResult">
+  	SELECT ct.name customerName, sl.* FROM tb_salary sl 
+	LEFT JOIN tb_customer ct ON sl.idCard = ct.idCard
+	<where>
+		<if test="customerName!=null and customerName!=''">
+			ct.name like concat("%",#{customerName},"%") 
+		</if>
+		<if test="idcard!=null and idcard!=''">
+			sl.idCard like concat("%", #{idcard}, "%")
+		</if>
+	</where>
+  </select>
+  
+  
+  <!-- 获取查询的记录数量 -->
+  <select id="getCount" resultType="integer">
+  	select count(1) from (SELECT ct.name companyname, sl.* FROM tb_salary sl 
+	LEFT JOIN tb_customer ct ON sl.idCard = ct.idCard
+	<where>
+		<if test="customerName!=null and customerName!=''">
+			ct.name like concat("%",#{customerName},"%") 
+		</if>
+		<if test="idcard!=null and idcard!=''">
+			sl.idCard like concat("%", #{idcard}, "%")
+		</if>
+	</where>) a
+  </select>
+  
+  <!-- 查询身份证号是否存在 -->
+  <select id="check" resultType="integer">
+  	select count(1) from tb_salary where idcard = #{checkId}
+  </select>
+  
+  <!-- 分页查询工资条记录 -->
+  <select id="listGongzitiao" resultType="map">
+  	SELECT ct.name customerName, sl.idCard, sl.payCard, sl.payDate, sl.baseSalary, sl.bonusPay, sl.overtimePay, sl.taxPay, sl.totalPay, sl.mustPay, si.yanglao, si.yiliao, si.shiye, si.gongshang, si.shengyu FROM tb_salary sl 
+	LEFT JOIN tb_social_insurance si ON sl.idCard = si.idCard 
+	LEFT JOIN tb_customer ct ON sl.idCard = ct.idCard 
+  	<where>
+  		<if test="customerName!=null and customerName!=''">
+			and ct.name like concat(#{customerName}, "%")
+		</if>
+		<if test="idcard!=null and idcard!=''">
+			and sl.idcard like concat(#{idcard}, "%")
+		</if>
+  	</where>
+  	limit #{page}, #{rows}
+  </select>
+  
+  <!-- 查询工资条的记录数 -->
+  <select id="getCountGongzitiao" resultType="integer">
+  	select count(1) from (SELECT ct.name customerName, sl.idCard, sl.payCard, sl.payDate, sl.baseSalary, sl.bonusPay, sl.overtimePay, sl.taxPay, sl.totalPay, sl.mustPay, si.yanglao, si.yiliao, si.shiye, si.gongshang, si.shengyu FROM tb_salary sl 
+	LEFT JOIN tb_social_insurance si ON sl.idCard = si.idCard 
+	LEFT JOIN tb_customer ct ON sl.idCard = ct.idCard 
+	<where>
+  		<if test="customerName!=null and customerName!=''">
+			and ct.name like concat(#{customerName}, "%")
+		</if>
+		<if test="idcard!=null and idcard!=''">
+			and sl.idcard like concat(#{idcard}, "%")
+		</if>
+  	</where>) a
+  </select>
+  
+  <!-- 获取统计信息 -->
+  <select id="getStatistics" resultType="com.zhidisoft.utils.StatisticsGongzi">
+  	SELECT tb.customerName, sl.idCard, sl.payCard, tb.companyName, COUNT(1) months, SUM(totalPay) sal, SUM(taxPay) tax, SUM(proxyFee) proxy FROM tb_salary sl
+	LEFT JOIN 
+	(SELECT ct.name customerName,ct.idCard, cp.name companyName, cp.id companyId FROM tb_customer ct LEFT JOIN tb_company cp ON ct.companyId = cp.id) tb
+	ON sl.idcard = tb.idcard
+	<where>
+		<if test="customerName!=null and customerName!=''">
+			and tb.customerName like concat(#{customerName}, "%")
+		</if>
+		<if test="idcard!=null and idcard!=''">
+			and sl.idcard like concat(#{idcard}, "%")
+		</if>
+		<if test="paycard!=null and paycard!=''">
+			and sl.paycard like concat(#{paycard}, "%")
+		</if>
+		<if test="companyName!=null and companyName!=''">
+			and tb.companyId = #{companyName}
+		</if>
+	</where>
+	GROUP BY idCard limit #{page}, #{rows}
+  </select>
+  
+  <!-- 获取统计信息的个数 -->
+  <select id="getStatisticsCount" resultType="integer">
+  	select count(1) from (SELECT tb.customerName, sl.idCard, sl.payCard, tb.companyName, COUNT(1) months, SUM(totalPay) sal, SUM(taxPay) tax, SUM(proxyFee) proxy FROM tb_salary sl
+	LEFT JOIN 
+	(SELECT ct.name customerName,ct.idCard, cp.name companyName, cp.id companyId FROM tb_customer ct LEFT JOIN tb_company cp ON ct.companyId = cp.id) tb
+	ON sl.idcard = tb.idcard
+	<where>
+		<if test="customerName!=null and customerName!=''">
+			and tb.customerName like concat(#{customerName}, "%")
+		</if>
+		<if test="idcard!=null and idcard!=''">
+			and sl.idcard like concat(#{idcard}, "%")
+		</if>
+		<if test="paycard!=null and paycard!=''">
+			and sl.paycard like concat(#{paycard}, "%")
+		</if>
+		<if test="companyName!=null and companyName!=''">
+			and tb.companyId = #{companyName}
+		</if>
+	</where>
+	GROUP BY idCard) a
+  </select>
+</mapper>

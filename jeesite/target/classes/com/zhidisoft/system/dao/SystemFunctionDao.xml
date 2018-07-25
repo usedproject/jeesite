@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidisoft.system.dao.SystemFunctionDao">
+  <resultMap id="BaseResultMap" type="com.zhidisoft.system.entity.SystemFunction">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="funcName" jdbcType="VARCHAR" property="funcname" />
+    <result column="funcURL" jdbcType="VARCHAR" property="funcurl" />
+    <result column="funcType" jdbcType="INTEGER" property="functype" />
+    <result column="IconClass" jdbcType="VARCHAR" property="iconclass" />
+    <result column="IconURL" jdbcType="VARCHAR" property="iconurl" />
+    <result column="sortNum" jdbcType="INTEGER" property="sortnum" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="createBy" jdbcType="INTEGER" property="createby" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="updateBy" jdbcType="INTEGER" property="updateby" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="funcNote" jdbcType="VARCHAR" property="funcnote" />
+  </resultMap>
+  <resultMap type="com.zhidisoft.system.entity.SystemFunction" id="associateResultMap" extends="BaseResultMap">
+  	<association property="parentfunction" column="parentId" javaType="com.zhidisoft.system.entity.SystemFunction" select="com.zhidisoft.system.dao.SystemFunctionDao.selectByPrimaryKey">
+  	</association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_system_function
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidisoft.system.entity.SystemFunction">
+    insert into tb_system_function (id, funcName, funcURL, 
+      funcType, parentId, IconClass, 
+      IconURL, sortNum, status, 
+      createBy, createTime, updateBy, 
+      updateTime, funcNote)
+    values (#{id,jdbcType=INTEGER}, #{funcname,jdbcType=VARCHAR}, #{funcurl,jdbcType=VARCHAR}, 
+      #{functype,jdbcType=INTEGER}, #{parentfunction.id,jdbcType=INTEGER}, #{iconclass,jdbcType=VARCHAR}, 
+      #{iconurl,jdbcType=VARCHAR}, #{sortnum,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR}, 
+      #{createby,jdbcType=INTEGER}, #{createtime,jdbcType=TIMESTAMP}, #{updateby,jdbcType=INTEGER}, 
+      #{updatetime,jdbcType=TIMESTAMP}, #{funcnote,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidisoft.system.entity.SystemFunction">
+    update tb_system_function
+    set funcName = #{funcname},
+      funcURL = #{funcurl},
+      funcType = #{functype},
+      parentId = #{parentfunction.id},
+      IconClass = #{iconclass},
+      IconURL = #{iconurl},
+      sortNum = #{sortnum},
+      status = #{status},
+      
+      updateBy = #{updateby},
+      updateTime = #{updatetime},
+      funcNote = #{funcnote}
+    where id = #{id}
+  </update>
+  <select id="selectByPrimaryKey"  resultMap="BaseResultMap">
+    select id, funcName, funcURL, funcType, parentId, IconClass, IconURL, sortNum, status, 
+    createBy, createTime, updateBy, updateTime, funcNote
+    from tb_system_function
+    where id = #{id}
+  </select>
+  <select id="selectById"  resultMap="associateResultMap">
+    select id, funcName, funcURL, funcType, parentId, IconClass, IconURL, sortNum, status, 
+    createBy, createTime, updateBy, updateTime, funcNote
+    from tb_system_function
+    where id = #{id}
+  </select>
+  <select id="selectAll" resultMap="associateResultMap">
+    select id, funcName, funcURL, funcType, parentId, IconClass, IconURL, sortNum, status, 
+    createBy, createTime, updateBy, updateTime, funcNote
+    from tb_system_function
+  </select>
+  
+  <select id="getFunctionListByRoles" resultMap="BaseResultMap">
+  	select * from tb_system_function,tb_role_function 
+  	where tb_role_function.funcId=tb_system_function.id
+  	and tb_role_function.roleId in
+  	<foreach collection="list" item="roleId" open="(" separator="," close=")">
+  		#{roleId}
+  	</foreach>
+  </select>
+  
+  <select id="getFunctionListByRolesAndId" resultMap="BaseResultMap">
+  	select * from tb_system_function,tb_role_function 
+  	<where>
+  		tb_role_function.funcId=tb_system_function.id
+  		<choose>
+  			<when test="id==null">
+  				and parentId is null
+  			</when>
+  			<otherwise>
+  				and parentId = #{id}
+  			</otherwise>
+  		</choose>
+  		<if test="roles!=null">
+  			and tb_role_function.roleId in
+  			<foreach collection="roles" item="role" open="(" separator="," close=")">
+  				#{role.id}
+  			</foreach>
+  		</if>
+  		<if test="funcType!=null">
+  			and funcType=#{funcType} 
+  		</if>
+  		<if test="status!=null">
+  			and status=#{status}
+  		</if>
+  	</where>
+  </select>
+  
+  <select id="getFunctionListByParentId" resultMap="BaseResultMap">
+  	select * from tb_system_function
+  		<where>
+  			<if test="id==null">
+  				parentId is null
+  			</if>
+  			<if test="id!=null">
+  				parentId =#{id}
+  			</if>
+  		</where>
+  </select>
+  
+  <select id="getListByRoleId" resultMap="BaseResultMap">
+  	select * from tb_system_function,tb_role_function where
+  		tb_role_function.funcId=tb_system_function.id and tb_role_function.roleId=#{id}
+  </select>
+  
+  <select id="getFunctionListByPage" resultMap="associateResultMap">
+  	select * from tb_system_function
+  	<where>
+  		<if test="funcname!=null and funcname!=''">
+  			funcName like concat('%',#{funcname},'%')
+  		</if>
+  	</where>
+  	limit #{page},#{rows}
+  </select>
+  
+  <select id="count" resultType="integer">
+  	select count(1) from tb_system_function
+  	<where>
+  		<if test="funcname!=null and funcname!=''">
+  			funcName like concat('%',#{funcname},'%')
+  		</if>
+  	</where>
+  </select>
+  
+  <select id="getFuncNameById" resultType="String">
+  	select funcName from tb_system_function where id=#{id}
+  </select>
+  
+  <update id="deleteByIds">
+  	update tb_system_function set status=1 where id in
+  	<foreach collection="ids" open="(" separator="," close=")" item="id">
+  		#{id}
+  	</foreach>
+  </update>
+</mapper>

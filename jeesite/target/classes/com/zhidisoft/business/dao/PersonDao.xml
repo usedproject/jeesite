@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidisoft.business.dao.PersonDao">
+  <resultMap id="BaseResultMap" type="com.zhidisoft.business.entity.Person">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="idCard" jdbcType="VARCHAR" property="idcard" />
+    <result column="jobIntension" jdbcType="VARCHAR" property="jobintension" />
+    <result column="jobType" jdbcType="VARCHAR" property="jobtype" />
+    <result column="forPrice" jdbcType="DOUBLE" property="forprice" />
+    <result column="forAddress" jdbcType="VARCHAR" property="foraddress" />
+    <result column="worked" jdbcType="VARCHAR" property="worked" />
+    <result column="personInfo" jdbcType="VARCHAR" property="personinfo" />
+    <result column="resumeURL" jdbcType="VARCHAR" property="resumeurl" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="createBy" jdbcType="INTEGER" property="createby" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="updateBy" jdbcType="INTEGER" property="updateby" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
+  	<result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+   	<result column="name" jdbcType="VARCHAR" property="name" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_person
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidisoft.business.entity.Person">
+    insert into tb_person ( idCard, jobIntension, 
+      jobType, forPrice, forAddress, 
+      worked, personInfo, resumeURL, 
+      status, createBy, createTime, 
+      updateBy, updateTime, remark
+      )
+    values ( #{idcard,jdbcType=VARCHAR}, #{jobintension,jdbcType=VARCHAR}, 
+      #{jobtype,jdbcType=VARCHAR}, #{forprice,jdbcType=DOUBLE}, #{foraddress,jdbcType=VARCHAR}, 
+      #{worked,jdbcType=VARCHAR}, #{personinfo,jdbcType=VARCHAR}, #{resumeurl,jdbcType=VARCHAR}, 
+      #{status,jdbcType=VARCHAR}, #{createby,jdbcType=INTEGER}, #{createtime,jdbcType=TIMESTAMP}, 
+      #{updateby,jdbcType=INTEGER}, #{updatetime}, #{remark,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidisoft.business.entity.Person">
+    update tb_person
+    set idCard = #{idcard,jdbcType=VARCHAR},
+      jobIntension = #{jobintension,jdbcType=VARCHAR},
+      jobType = #{jobtype,jdbcType=VARCHAR},
+      forPrice = #{forprice,jdbcType=DOUBLE},
+      forAddress = #{foraddress,jdbcType=VARCHAR},
+      worked = #{worked,jdbcType=VARCHAR},
+      personInfo = #{personinfo,jdbcType=VARCHAR},
+      resumeURL = #{resumeurl,jdbcType=VARCHAR},
+      updateBy = #{updateby,jdbcType=INTEGER},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select p.id, p.idCard, jobIntension, jobType, forPrice, forAddress, worked, personInfo, 
+    resumeURL, p.status, p.createBy, p.createTime, p.updateBy, p.updateTime, p.remark,name
+    from tb_person p left join tb_customer c on p.idCard=c.idCard 
+    where p.id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, idCard, jobIntension, jobType, forPrice, forAddress, worked, personInfo, 
+    resumeURL, status, createBy, createTime, updateBy, updateTime, remark
+    from tb_person
+  </select>
+  
+  <select id="getListByPage" resultMap="BaseResultMap">
+  	select p.id, p.idCard, jobIntension, jobType, forPrice, forAddress, worked, personInfo, 
+    resumeURL, p.status, p.createBy, p.createTime, p.updateBy, p.updateTime, p.remark,name
+    from tb_person p left join tb_customer c on p.idCard=c.idCard 
+    <where>
+    	<if test="person.name!=null and person.name!=''">
+    		and name like concat("%",#{person.name},"%")
+    	</if>
+    	<if test="person.idcard!=null and person.idcard!=''">
+    		and p.idcard like concat("%",#{person.idcard},"%")
+    	</if>
+    	<if test="person.jobintension!=null and person.jobintension!=''">
+    		and jobIntension like concat("%",#{person.jobintension},"%")
+    	</if>
+    	<if test="person.foraddress!=null and person.foraddress!=''">
+    		and forAddress like concat("%",#{person.foraddress},"%")
+    	</if>
+    </where>
+    limit #{page},#{rows}
+  </select>
+  
+  <select id="count" resultType="integer">
+  	select count(1) from tb_person p left join tb_customer c on p.idCard=c.idCard 
+  	 <where>
+    	<if test="person.name!=null and person.name!=''">
+    		and name like concat("%",#{person.name},"%")
+    	</if>
+    	<if test="person.idcard!=null and person.idcard!=''">
+    		and p.idcard like concat("%",#{person.idcard},"%")
+    	</if>
+    	<if test="person.jobintension!=null and person.jobintension!=''">
+    		and jobIntension like concat("%",#{person.jobintension},"%")
+    	</if>
+    	<if test="person.foraddress!=null and person.foraddress!=''">
+    		and forAddress like concat("%",#{person.foraddress},"%")
+    	</if>
+    </where>
+  </select>
+  
+  <select id="selectByIdCard" resultMap="BaseResultMap">
+  	select id, idCard, jobIntension, jobType, forPrice, forAddress, worked, personInfo, 
+    resumeURL, status, createBy, createTime, updateBy, updateTime, remark
+    from tb_person
+    where idCard = #{idcard}
+  </select>
+  
+</mapper>
